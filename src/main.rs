@@ -1,6 +1,10 @@
 use clearscreen::*;
 use colored::*;
-use std::{env::set_current_dir, io::{self, Write}};
+use std::{
+    env::{current_dir, set_current_dir},
+    fs,
+    io::{self, Write},
+};
 use sys_info::{
     cpu_num, cpu_speed, disk_info, linux_os_release, mem_info, os_release, os_type, proc_total,
 };
@@ -32,7 +36,15 @@ fn main() {
     }
 
     loop {
-        print!(" : ");
+        let currdir = current_dir().unwrap();
+        let mut _curdir = "";
+        if currdir.to_str().unwrap() == "/home" {
+            _curdir = "~/";
+            print!("{:?} : ", _curdir);
+        } else {
+            print!("{:?} : ", currdir);
+        }
+
         io::stdout().flush().unwrap();
         let mut cmdd = String::new();
         io::stdin().read_line(&mut cmdd).unwrap();
@@ -92,12 +104,30 @@ fn main() {
                     }
                 }
             }
-           "cd" => {
-            println!("Path : ");
-            let mut path = String::new();
-            io::stdin().read_line(&mut path).unwrap();
-            set_current_dir(path.trim().to_string()).unwrap();
-           }, 
+            "cd" => {
+                println!("Path : ");
+                let mut path = String::new();
+                io::stdin().read_line(&mut path).unwrap();
+                set_current_dir(path.trim().to_string()).unwrap();
+            }
+            "clear" | "clr" => {
+                clear().unwrap();
+            }
+            "ls" | "dir" => {
+                let currdir = current_dir().unwrap();
+                //let homedir = home_dir().unwrap();
+                let mut _curdir = currdir.display().to_string();
+                if let Ok(lsr) = fs::read_dir(&currdir) {
+                    for entry in lsr {
+                        if let Ok(entry) = entry {
+                            println!("{:?}", entry.file_name().to_string_lossy().green());
+                        }
+                    }
+                } else {
+                    println!("Failed to read directory.");
+                }
+            }
+
             _ => println!("{}{}", "ERROR NO COMMAND FOUND FOR - ".red(), cmd.green()),
         }
     }

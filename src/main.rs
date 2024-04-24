@@ -3,7 +3,7 @@ use colored::*;
 use std::{
     env::{current_dir, set_current_dir},
     fs,
-    io::{self, Write},
+    io::{self, stdout, Write}, process::exit,
 };
 use sys_info::{
     cpu_num, cpu_speed, disk_info, linux_os_release, mem_info, os_release, os_type, proc_total,
@@ -84,8 +84,8 @@ fn main() {
                             diskinfo.total as f64 / 1024.0 / 1024.0
                         );
                     } else {
-                        println!("{}{}", "OS Type -> ".yellow(), ostype.yellow());
-                        println!("{}{}", "Kernel -> ".yellow(), osrelease.yellow());
+                        // println!("{}{}", "OS Type -> ".yellow(), ostype.yellow());
+                        // println!("{}{}", "Kernel -> ".yellow(), osrelease.yellow());
                         //println!("{}{}", "Linux OS Release Info -> ".yellow(), losr.pretty_name.unwrap_or_default().yellow());
                         println!(
                             "{}{:.2} GB",
@@ -113,6 +113,16 @@ fn main() {
             "clear" | "clr" => {
                 clear().unwrap();
             }
+            "echo" | "print" => {
+                print!("TEXT > ");
+                stdout().flush().unwrap();
+                let mut txt = String::new();
+                io::stdin().read_line(&mut txt).unwrap();
+                println!("{}",txt.trim().green());
+            }
+            "exit" | "quit" => {
+                exit(0);
+            }
             "ls" | "dir" => {
                 let currdir = current_dir().unwrap();
                 //let homedir = home_dir().unwrap();
@@ -120,7 +130,7 @@ fn main() {
                 if let Ok(lsr) = fs::read_dir(&currdir) {
                     for entry in lsr {
                         if let Ok(entry) = entry {
-                            println!("{:?}", entry.file_name().to_string_lossy().green());
+                            println!("{}", entry.file_name().to_string_lossy().trim().green());
                         }
                     }
                 } else {

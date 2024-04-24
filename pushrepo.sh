@@ -1,4 +1,6 @@
 # Fetch the remote changes
+git add .
+git commit .
 git fetch halsh
 
 # Merge the remote changes into your local branch

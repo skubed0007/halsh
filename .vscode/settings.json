@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "history.h": "c",
+        "readline.h": "c",
+        "tilde.h": "c",
+        "rlstdc.h": "c"
+    }
+}

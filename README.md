@@ -14,4 +14,4 @@ Halsh is designed for users who appreciate a simple, no-frills environment. Whet
 It's **efficient**, **functional**, and **minimalistic**—exactly what you need if you want a simple shell experience without the bloat.
 
 # License
-this project is licensed under the [Joay License](LICENSE)
+this project is licensed under the [Joay License](LICENSE.md)

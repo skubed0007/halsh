@@ -71,7 +71,7 @@ void save_config() {
     }
 
     char config_path[BUFFER_SIZE];
-    snprintf(config_path, sizeof(config_path), "%s/.simple_shell_config", home);
+    snprintf(config_path, sizeof(config_path), "%s/.halshrc", home);
 
     FILE *config_file = fopen(config_path, "w");
     if (config_file) {
@@ -99,8 +99,8 @@ char *set_prompt() {
 
     char *final_prompt = malloc(BUFFER_SIZE);
     snprintf(final_prompt, BUFFER_SIZE, 
-             "\033[1;36m┌──(\033[1;32m%s\033[0m@\033[1;33m%s\033[0m)─[\033[1;34m%s\033[0m]─[\033[1;35m%s\033[0m]\n\033[1;37m└─$ \033[0m", 
-             getenv("USER"), hostname, cwd, time_str);
+    "\033[1;36m╭──(\033[1;32m%s\033[0m@\033[1;33m%s\033[0m)─[\033[1;34m%s\033[0m]─[\033[1;35m%s\033[0m]\n\033[1;37m╰─$ \033[0m", 
+    getenv("USER"), hostname, cwd, time_str);
 
     return final_prompt;
 }

@@ -4,7 +4,6 @@ Halsh is a **custom shell** written in C. Its code base is extremely **simple** 
 
 Halsh isn't a fancy shell—it's just... a **shell**. There's no "AI" nonsense, no unnecessary complexity—just a **plain minimal shell** with a few essential features:
 
-- **Custom prompts**  
 - **Aliases**  
 - **Command history**  
 - **Job control**  

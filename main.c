@@ -29,6 +29,8 @@ void execute_command(char **args);
 void execute_builtin_command(char **args);
 char *get_alias_command(const char *alias);
 void handle_signal(int signal);
+void load_history();
+void save_history();
 void run_shell();
 
 void load_config() {
@@ -105,6 +107,52 @@ char *set_prompt() {
     return final_prompt;
 }
 
+void load_history() {
+    char *home = getenv("HOME");
+    if (!home) {
+        fprintf(stderr, "HOME environment variable not set.\n");
+        return;
+    }
+
+    char history_path[BUFFER_SIZE];
+    snprintf(history_path, sizeof(history_path), "%s/.halshhis", home);
+    FILE *history_file = fopen(history_path, "r");
+    if (history_file) {
+        char line[BUFFER_SIZE];
+        while (fgets(line, sizeof(line), history_file)) {
+            line[strcspn(line, "\n")] = 0;
+            if (history_count < MAX_HISTORY) {
+                history[history_count++] = strdup(line);
+                add_history(line);
+            }
+        }
+        fclose(history_file);
+    } else {
+        perror("No history file found\nMay be the first time you run halsh");
+    }
+}
+
+void save_history() {
+    char *home = getenv("HOME");
+    if (!home) {
+        fprintf(stderr, "HOME environment variable not set.\n");
+        return;
+    }
+
+    char history_path[BUFFER_SIZE];
+    snprintf(history_path, sizeof(history_path), "%s/.halshhis", home);
+
+    FILE *history_file = fopen(history_path, "w");
+    if (history_file) {
+        for (int i = 0; i < history_count; i++) {
+            fprintf(history_file, "%s\n", history[i]);
+        }
+        fclose(history_file);
+    } else {
+        perror("Error opening history file");
+    }
+}
+
 char *expand_tilde(const char *path) {
     if (path[0] == '~') {
         const char *home = getenv("HOME");
@@ -159,6 +207,7 @@ char **parse_input(char *line) {
 
 void execute_command(char **args) {
     pid_t pid = fork();
+    
     if (pid == 0) {
         if (execvp(args[0], args) == -1) {
             perror("shell");
@@ -182,6 +231,7 @@ void execute_builtin_command(char **args) {
         }
     } else if (strcmp(args[0], "exit") == 0) {
         save_config();
+        save_history();
         exit(0);
     } else if (strcmp(args[0], "history") == 0) {
         for (int i = 0; i < history_count; i++) {
@@ -226,8 +276,6 @@ char *get_alias_command(const char *alias) {
 
 void handle_signal(int signal) {
     if (signal == SIGINT) {
-        char *msg = "\nInterrupt signal received, returning to shell...\n";
-        write(STDOUT_FILENO, msg, strlen(msg));
         return;
     }
     else if (signal == SIGTSTP) {
@@ -266,12 +314,10 @@ void handle_signal(int signal) {
     }
 }
 
-
-
 void run_shell() {
     load_config();
+    load_history();
     signal(SIGINT, handle_signal);
-    read_history(NULL);
 
     while (1) {
         char *prompt = set_prompt();
@@ -306,11 +352,11 @@ void run_shell() {
         free(line);
         free(args);
     }
-
-    write_history(NULL);
+    save_history();
 }
 
 int main() {
+    load_history();
     run_shell();
     return 0;
 }

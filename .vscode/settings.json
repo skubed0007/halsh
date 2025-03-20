@@ -3,6 +3,10 @@
         "history.h": "c",
         "readline.h": "c",
         "tilde.h": "c",
-        "rlstdc.h": "c"
+        "rlstdc.h": "c",
+        "_": "cpp",
+        "types.h": "c",
+        "stdio.h": "c",
+        "__": "cpp"
     }
 }
